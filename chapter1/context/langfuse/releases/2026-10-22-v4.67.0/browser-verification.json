@@ -1,0 +1,19 @@
+{
+  "version": "4.67.0 OSS",
+  "existingAuthenticatedSessionRetained": true,
+  "formattedThinking": {
+    "full": {
+      "observationId": "e513062ce2825128",
+      "sections": 2,
+      "historicalAndCurrent": true,
+      "expandedSuccessfully": true
+    },
+    "no_reasoning": {
+      "observationId": "eeb76db054a5522b",
+      "sections": 1,
+      "currentOnly": true,
+      "expandedSuccessfully": true
+    }
+  },
+  "screenshot": "thinking.png"
+}

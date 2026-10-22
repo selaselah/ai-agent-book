@@ -2,7 +2,7 @@
 set -euo pipefail
 
 cd /disk1/langfuse
-expected_commit=29a40eb027c5f4bb8c72c2f6d2d7e98aa1ce0cbf
+expected_commit=21931f2c29ed7d02c106de290e00b67df9049e75
 test "$(git -C source rev-parse HEAD)" = "$expected_commit"
 test -f .env
 chmod 600 .env

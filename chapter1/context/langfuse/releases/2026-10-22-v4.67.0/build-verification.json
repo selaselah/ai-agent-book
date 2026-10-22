@@ -1,0 +1,62 @@
+{
+  "sourceCommit": "21931f2c29ed7d02c106de290e00b67df9049e75",
+  "patchSha256": "e8a6e511e34aecb0571619c18857f359318b38f1b34dd2bd597a5d814acbb44f",
+  "nextBuildId": "HyLpsrevIGJ6_pwKcnqAM",
+  "build": {
+    "exitCode": 0,
+    "tasksSuccessful": 5,
+    "tasksTotal": 5,
+    "tasksCached": 2,
+    "duration": "5m16.337s",
+    "compileSeconds": 105,
+    "typeScriptSeconds": 111,
+    "staticPages": 86,
+    "otelWorkerSmokeTest": "passed"
+  },
+  "clientBundleScan": {
+    "scannedFiles": 378,
+    "seconds": 15.5,
+    "result": "clean: every referenced identifier is declared or a known global"
+  },
+  "patchTests": {
+    "sourceCommit": "21931f2c29ed7d02c106de290e00b67df9049e75",
+    "patchSha256": "e8a6e511e34aecb0571619c18857f359318b38f1b34dd2bd597a5d814acbb44f",
+    "patchAppliesCleanly": true,
+    "tests": [
+      {
+        "command": "pnpm --filter @langfuse/shared run test src/utils/normalized-io/conventions/providers/openai/openai.test.ts",
+        "testFiles": 1,
+        "passed": 20,
+        "failed": 0
+      },
+      {
+        "command": "DOCKER_BUILD=1 pnpm --filter web run test-client src/features/traces/hooks/useChatMLParser.clienttest.ts",
+        "testFiles": 1,
+        "passed": 9,
+        "failed": 0
+      }
+    ],
+    "environment": "linux/x64 Debian amd64 container via Rosetta; Node24.21.0 pnpm12.8.2; no runtime env files",
+    "lint": {
+      "exitCode": 0,
+      "scope": "four patch files",
+      "commands": [
+        "pnpm --filter @langfuse/shared exec eslint src/utils/normalized-io/conventions/providers/openai/index.ts src/utils/normalized-io/conventions/providers/openai/openai.test.ts --max-warnings 0",
+        "pnpm --filter web exec eslint src/features/traces/hooks/useChatMLParser.clienttest.ts next.config.mjs --max-warnings 0"
+      ],
+      "fullRepositoryLintRun": false
+    }
+  },
+  "warnings": [
+    "Existing Next.js/Sentry i18n/telemetry/deprecation warnings",
+    "Upstream instrumentation.ts process.exit Edge Runtime warning; same warning present in prior successful build"
+  ],
+  "skipped": [
+    "Full repository lint and unrelated integration tests: no upstream business-code modifications were made locally; unchanged patch received targeted ESLint/tests and complete production TypeScript/build/scan."
+  ],
+  "artifact": {
+    "file": "web-build-linux-x64-langfuse-4.67.0-20261022.tar.zst",
+    "bytes": 174891168,
+    "sha256": "0bbb80aaaa66ebcb39500577744c098cc2937668a9522391662a41f487140002"
+  }
+}

@@ -5,9 +5,9 @@ set -euo pipefail
 source_root="${LANGFUSE_SOURCE_ROOT:-/disk1/langfuse/source}"
 tools_root="${LANGFUSE_BUILD_TOOLS:-/disk1/langfuse/build-tools}"
 build_action="${1:-build}"
-upstream_commit=29a40eb027c5f4bb8c72c2f6d2d7e98aa1ce0cbf
-runtime_image=docker.langfuse.com/langfuse/langfuse:4.66.0
-runtime_id=sha256:8e8d248990fa35883a72e3cce0c704524d886268dfe4e62879b94d2ba39d5966
+upstream_commit=21931f2c29ed7d02c106de290e00b67df9049e75
+runtime_image=docker.langfuse.com/langfuse/langfuse:4.67.0
+runtime_id=sha256:5b12cb0c48d89f9ba1128722057c24a9f10ed89f670a0650ce1f502f90f7c95d
 receipt="$tools_root/logs/build-receipt.json"
 patch_paths=(
   packages/shared/src/utils/normalized-io/conventions/providers/openai/index.ts
@@ -47,7 +47,7 @@ cd "$source_root"
 node -e 'if (process.platform !== "linux" || process.arch !== "x64") throw new Error("Build and image packaging require Linux x64")'
 assert_source_patch() {
   [[ "$(git rev-parse HEAD)" == "$upstream_commit" ]] || {
-    echo 'Source HEAD differs from the pinned upstream v4.66.0 commit.' >&2
+    echo 'Source HEAD differs from the pinned upstream v4.67.0 commit.' >&2
     exit 1
   }
   changed_files="$(git diff --name-only HEAD)"
@@ -115,6 +115,8 @@ NODE
     ;;
   image)
     export DOCKER_HOST="${DOCKER_HOST:-unix:///run/user/6351/langfuse-docker.sock}"
+    # Packaging may run against a fresh checkout on another Linux host.
+    node packages/shared/clickhouse/scripts/prepare-migrations.mjs materialize packages/shared/clickhouse/migrations
     patch_sha="$(git diff --binary HEAD -- "${patch_paths[@]}" | sha256sum | cut -d ' ' -f 1)"
     node - "$receipt" "$upstream_commit" "$patch_sha" "$runtime_id" <<'NODE'
 const fs = require("node:fs");
@@ -133,7 +135,7 @@ const buildConfig = JSON.parse(fs.readFileSync("web/.next/required-server-files.
 if (buildConfig.basePath !== basePath) throw new Error("Image base path differs from requested base path");
 NODE
     [[ "$(docker image inspect "$runtime_image" --format '{{.Id}}')" == "$runtime_id" ]] || {
-      echo 'Published runtime image differs from the verified v4.66.0 image.' >&2
+      echo 'Published runtime image differs from the verified v4.67.0 image.' >&2
       exit 1
     }
     [[ -f web/.next/standalone/web/server.js ]]
@@ -161,9 +163,9 @@ WORKDIR /app
 COPY --chown=1001:1001 app/ /app/
 USER 1001
 DOCKERFILE
-    image_tag="${LANGFUSE_WEB_IMAGE:-context-lab/langfuse-web:4.66.0-reasoning}"
+    image_tag="${LANGFUSE_WEB_IMAGE:-context-lab/langfuse-web:4.67.0-reasoning}"
     docker build --pull=false --build-arg "BASE_RUNTIME=$runtime_image" \
-      --label "org.opencontainers.image.version=4.66.0-reasoning" \
+      --label "org.opencontainers.image.version=4.67.0-reasoning" \
       --label "org.opencontainers.image.revision=$upstream_commit" \
       --label "context-lab.source-patch-sha256=$patch_sha" \
       --label "context-lab.runtime-image-id=$runtime_id" \

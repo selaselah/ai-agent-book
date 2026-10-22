@@ -2,8 +2,8 @@
 
 Target: `chendx@miniboard-dev1.ycs.ynode.cn`, accessed using the existing `tsh` login.
 
-- Official Langfuse release: `v4.66.0`
-- Source commit: `29a40eb027c5f4bb8c72c2f6d2d7e98aa1ce0cbf`
+- Official Langfuse release: `v4.67.0`
+- Source commit: `21931f2c29ed7d02c106de290e00b67df9049e75`
 - Source checkout: `/disk1/langfuse/source`
 - Compose project: `context-lab-langfuse`
 - UI: https://ai-tutor-helper.corp.youdao.com/langfuse
@@ -16,6 +16,7 @@ Target: `chendx@miniboard-dev1.ycs.ynode.cn`, accessed using the existing `tsh` 
 The source patch is saved in `patches/reasoning-content.patch`. The immutable
 [2026-10-22 release record](releases/2026-10-22/README.md) includes the experiment
 evidence, sanitized import identifiers, build receipts and verification results.
+The [v4.67.0 upgrade record](releases/2026-10-22-v4.67.0/README.md) preserves the later upgrade evidence.
 These tracked files can be restored from Git without the ignored `.source`,
 `.import` or `.builder-vm` directories. For a fresh instance, copy `env.example`
 to `.env` and replace all placeholders; retain existing secrets when updating an
@@ -44,7 +45,7 @@ matches the previous baseline exactly: five experiments, 51 observations, 25
 scores and 23,302 tokens. No experiment was rerun or re-imported. Android downloads
 remain available and the retired competition services remain disabled.
 
-Deployment was verified on 2026-10-21: all six application containers running, the four backing services healthy, and `/api/public/health` reporting version `4.66.0`. All 51 imported observations' inputs, outputs and parent relationships match the source evidence exactly; the 17 generation observations total 23,302 tokens. The five experiments and 25 scores were read back successfully. The 17 pre-existing shared-Docker containers remain running, and the existing HTTP services on ports 80, 8020 and 10080 still return 200.
+The initial v4.66.0 deployment was verified on 2026-10-21: all six application containers running and the four backing services healthy. All 51 imported observations' inputs, outputs and parent relationships match the source evidence exactly; the 17 generation observations total 23,302 tokens. The five experiments and 25 scores were read back successfully. The 17 pre-existing shared-Docker containers remain running, and the existing HTTP services on ports 80, 8020 and 10080 still return 200.
 
 ## Provision and launch
 
@@ -95,7 +96,7 @@ export LANGFUSE_BUILD_BUNDLER=turbopack LANGFUSE_BUILD_MEMORY_SAVER=true
 export LANGFUSE_BUILD_HEAP_MB=16384 LANGFUSE_BUILD_THREADS=2 CIRCLE_NODE_TOTAL=2
 export HTTP_PROXY=http://127.0.0.1:18080 HTTPS_PROXY=http://127.0.0.1:18080 NODE_USE_ENV_PROXY=1
 bash /disk1/langfuse/build_web.sh build
-export LANGFUSE_WEB_IMAGE=context-lab/langfuse-web:4.66.0-reasoning-subpath
+export LANGFUSE_WEB_IMAGE=context-lab/langfuse-web:4.67.0-reasoning-subpath
 bash /disk1/langfuse/build_web.sh image
 ```
 
@@ -112,8 +113,8 @@ kernel adjustments were cleaned up, and the six baseline containers restored.
 No other Compose project or Docker daemon was stopped.
 
 The isolated builder is a Lima VZ/Rosetta Linux VM (24GB RAM, eight CPUs) running
-a Linux **amd64** container with a 21GB resident limit, 16GB V8 heap and 8GB
-temporary guest swap. Source paths remain `/disk1/langfuse/source`; Node, pnpm,
+a Linux **amd64** container with a 21GB resident limit, 16GB V8 heap and no
+guest swap for the v4.67.0 build. Source paths remain `/disk1/langfuse/source`; Node, pnpm,
 dependencies and generated native modules are all Linux x64. No ARM64/Darwin
 native output is mixed into the image. Only an isolated share directory is
 mounted, with no home directory or credentials. Builder state is Git-ignored
@@ -121,10 +122,10 @@ under `.builder-vm/`; the VM can be stopped after verified artifacts are copied
 back to the deployment host. The helper validates and records Linux/x64 in its
 build receipt.
 
-The subpath image is `context-lab/langfuse-web:4.66.0-reasoning-subpath`, selected with
+The subpath image is `context-lab/langfuse-web:4.67.0-reasoning-subpath`, selected with
 `LANGFUSE_WEB_IMAGE` in the deployment `.env`. Worker and backing services retain
 their official images. Keep a previously verified subpath image for future web
-rollbacks. The original `docker.langfuse.com/langfuse/langfuse:4.66.0` serves the
+rollbacks. The original `docker.langfuse.com/langfuse/langfuse:4.67.0` serves the
 root path and cannot replace the subpath image behind this gateway.
 `restore_runtime.sh` starts the runtime selected by the private `.env`, so a
 failed future build cannot silently replace the deployed subpath image.
@@ -138,10 +139,19 @@ requires rebuilding the frontend with `NEXT_PUBLIC_BASE_PATH=/langfuse` and
 setting `NEXTAUTH_URL=https://ai-tutor-helper.corp.youdao.com/langfuse/api/auth`.
 The build receipt and packaging step check the embedded path.
 
-`rollout_subpath.sh` checks the build receipt/image, starts a temporary candidate
-on localhost 3061, checks health and sign-in, then updates the private environment
-and recreates web/worker. It restores the previous environment/runtime if the
-health check fails. Backing services and imported observations are reused.
+`rollout_subpath.sh` upgrades v4.66.0 to v4.67.0. Stage the patched checkout at
+`source-4.67.0` and the new override as `compose.override-4.67.0.yml`; retain the
+live source and override until rollout. `backup_runtime.sh` briefly stops only
+this six-container stack, archives all five state directories with numeric
+ownership, verifies the archive, then restarts the original stack. Backups and
+private configuration remain in `/disk1/langfuse/backups/` with mode 700/600.
+The candidate starts on localhost 3061 only after backup, since its entrypoint
+runs database migrations. The v4.67.0 migration adds two nullable Slack columns.
+After health and sign-in checks, the script switches source, private environment
+and web/worker images; on failure it restores the previous source, override and
+runtime. The additive columns can remain on runtime rollback; a full state
+restore requires stopping this stack and restoring its verified data archive.
+The gateway and backing-service image versions are retained.
 
 `gateway.mjs` streams `/langfuse` requests unchanged to localhost 3060. It forwards
 `/android` to the existing download service on localhost 3211. Other routes
@@ -152,7 +162,15 @@ script, site content and release pointers are unchanged. The installer compares
 the download page before/after and rolls back on failure. It does not start
 `ai-tutor-helper.service`.
 
-After copying the updated override and helpers to `/disk1/langfuse`:
+For this existing-instance upgrade, copy the override as
+`/disk1/langfuse/compose.override-4.67.0.yml` and the helpers normally. Download
+only the application images (the official GHCR mirror avoids Docker Hub limits):
+
+```bash
+python3 /disk1/langfuse/pull_images.py --application-only --application-registry ghcr.io
+```
+
+After the patched source build and image packaging:
 
 ```bash
 bash /disk1/langfuse/rollout_subpath.sh

@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-22T04:06:42.245152+00:00",
+  "baseUrl": "https://ai-tutor-helper.corp.youdao.com",
+  "routes": {
+    "/langfuse/api/public/health": {
+      "status": 200,
+      "body": {
+        "status": "OK",
+        "version": "4.67.0"
+      }
+    },
+    "/langfuse/auth/sign-in": {
+      "status": 200
+    },
+    "/android/": {
+      "status": 200
+    },
+    "/": {
+      "status": 503
+    },
+    "/02/": {
+      "status": 503
+    },
+    "/api/status": {
+      "status": 503
+    }
+  }
+}

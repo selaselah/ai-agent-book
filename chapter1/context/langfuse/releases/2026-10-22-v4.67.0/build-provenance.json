@@ -1,0 +1,11 @@
+{
+  "builder": "Lima 2.2.1 VZ/Rosetta, amd64 Debian container",
+  "vmMemoryGiB": 24,
+  "vmCpuCount": 8,
+  "containerMemoryGiB": 21,
+  "temporaryGuestSwapGiB": 0,
+  "sourceCommit": "21931f2c29ed7d02c106de290e00b67df9049e75",
+  "builderImageId": "sha256:8aec6cfd21adfeff8dee7c661e3840eeb00d01b829b27af52b9d1bd0fab0a6f9",
+  "debianBaseDigest": "sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8",
+  "dependencyLockChanged": false
+}

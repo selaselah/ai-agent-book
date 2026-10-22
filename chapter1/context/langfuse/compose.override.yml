@@ -1,8 +1,8 @@
-# Used alongside source/docker-compose.yml from Langfuse v4.66.0.
+# Used alongside source/docker-compose.yml from Langfuse v4.67.0.
 # All data volumes are scoped to this project and stored on /disk1.
 services:
   langfuse-web:
-    image: ${LANGFUSE_WEB_IMAGE:-docker.langfuse.com/langfuse/langfuse:4.66.0}
+    image: ${LANGFUSE_WEB_IMAGE:-docker.langfuse.com/langfuse/langfuse:4.67.0}
     ports: !override
       - "3060:3000"
     mem_limit: 2g
@@ -15,7 +15,7 @@ services:
       NEXT_TELEMETRY_DISABLED: "1"
       LANGFUSE_IN_APP_AGENT_ENABLED: "false"
   langfuse-worker:
-    image: docker.langfuse.com/langfuse/langfuse-worker:4.66.0
+    image: docker.langfuse.com/langfuse/langfuse-worker:4.67.0
     ports: !reset []
     mem_limit: 2g
     logging: *logs

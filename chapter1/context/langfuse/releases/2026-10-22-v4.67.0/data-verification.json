@@ -1,0 +1,83 @@
+{
+  "traces": [
+    {
+      "mode": "full",
+      "observations": 8,
+      "scores": 5,
+      "generations": 3,
+      "tokens": 5390
+    },
+    {
+      "mode": "no_history",
+      "observations": 21,
+      "scores": 5,
+      "generations": 5,
+      "tokens": 5350
+    },
+    {
+      "mode": "no_reasoning",
+      "observations": 8,
+      "scores": 5,
+      "generations": 3,
+      "tokens": 4739
+    },
+    {
+      "mode": "no_tool_calls",
+      "observations": 2,
+      "scores": 5,
+      "generations": 1,
+      "tokens": 1050
+    },
+    {
+      "mode": "no_tool_results",
+      "observations": 12,
+      "scores": 5,
+      "generations": 5,
+      "tokens": 6773
+    }
+  ],
+  "observations": 51,
+  "scores": 25,
+  "generations": 17,
+  "tokens": 23302,
+  "reasoning": {
+    "full": {
+      "output_lengths": [
+        555,
+        251,
+        340
+      ],
+      "history_lengths": [
+        [],
+        [
+          555
+        ],
+        [
+          555,
+          251
+        ]
+      ]
+    },
+    "no_reasoning": {
+      "output_lengths": [
+        514,
+        200,
+        0
+      ],
+      "history_lengths": [
+        [],
+        [
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  },
+  "experiments": 5,
+  "source_sha256": "790c39c98c786a07c403c77e85497325db5b6213cc019be5e0c5a33e23f348af",
+  "stored_content_sha256": "339b1951221e46b9330f405925ffe0a261f15f27b7eb4245de26bcf497d74a88",
+  "all_recorded_io_parents_and_usage_match": true
+}

@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-10-22T04:06:42.117661+00:00",
+  "containers": {
+    "langfuse-web": {
+      "image": "context-lab/langfuse-web:4.67.0-reasoning-subpath",
+      "imageId": "sha256:d7050e6a8ea33451ba8adc0e1b07f09e6b7132d3fa92922691db1e2be7d8c1c6",
+      "running": true,
+      "health": null
+    },
+    "langfuse-worker": {
+      "image": "docker.langfuse.com/langfuse/langfuse-worker:4.67.0",
+      "imageId": "sha256:ff1fc19f3fc81486eb95f674b0372011d756dcd1d722f936e3ef80f6fe004c84",
+      "running": true,
+      "health": null
+    },
+    "postgres": {
+      "image": "docker.io/postgres:17-alpine",
+      "imageId": "sha256:7b20c441ce0c1f33470c6df5cd42243cb78b417121d0846f23093b4e1b891544",
+      "running": true,
+      "health": "healthy"
+    },
+    "clickhouse": {
+      "image": "docker.io/clickhouse/clickhouse-server:25.12",
+      "imageId": "sha256:1bda6c2180ad6cd0fb7fcdcefa3891922663a6dffb406044ccd03c38f16164d4",
+      "running": true,
+      "health": "healthy"
+    },
+    "redis": {
+      "image": "docker.io/redis:7-alpine",
+      "imageId": "sha256:1381fe0030d92594896c3fb2c32578d20fe89b69106417c36a091eb5f346ba27",
+      "running": true,
+      "health": "healthy"
+    },
+    "minio": {
+      "image": "cgr.dev/chainguard/minio",
+      "imageId": "sha256:de3258188dda752a2bc12c17b9b17a554f0b5007129139d10a412d20b8b77f06",
+      "running": true,
+      "health": "healthy"
+    }
+  },
+  "migration": {
+    "name": "20261020120000_add_slack_integration_installer",
+    "applied": true
+  },
+  "backup": {
+    "path": "/disk1/langfuse/backups/20261022T040159Z",
+    "bytes": 744857431,
+    "sha256": "f0f3e2566898097995fc15a64ffb65b1bb47d5f9bfcb50639012968e031d1016",
+    "archiveListedSuccessfully": true,
+    "directoryMode": "700",
+    "secretAndArchiveMode": "600"
+  },
+  "services": {
+    "langfuse-gateway.service": "active",
+    "quizboard-android-download.service": "active",
+    "ai-tutor-helper.service": "inactive"
+  }
+}

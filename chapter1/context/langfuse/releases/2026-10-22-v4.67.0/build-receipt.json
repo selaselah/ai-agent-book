@@ -1,0 +1,22 @@
+{
+  "upstreamCommit": "21931f2c29ed7d02c106de290e00b67df9049e75",
+  "patchSha256": "e8a6e511e34aecb0571619c18857f359318b38f1b34dd2bd597a5d814acbb44f",
+  "runtimeImageId": "sha256:5b12cb0c48d89f9ba1128722057c24a9f10ed89f670a0650ce1f502f90f7c95d",
+  "nextBuildId": "HyLpsrevIGJ6_pwKcnqAM",
+  "basePath": "/langfuse",
+  "bundler": "turbopack",
+  "rayonThreads": "4",
+  "nextCpuCountEnv": "2",
+  "memorySaverBuild": true,
+  "nodeOptions": "--max-old-space-size=16384",
+  "platform": "linux",
+  "arch": "x64",
+  "node": "v24.21.0",
+  "pnpm": "12.8.2",
+  "builtAt": "2026-10-22T03:59:01.910Z",
+  "runtimeArchiveConfigId": "sha256:6054e386cd722212126f9fcd5e28fead60e9e6291c7f8be775077642ec54d5a1",
+  "runtimeImageIdResolution": "Deployment Docker/containerd imported image ID; registry archive config identity retained separately. Runtime image is applied by subsequent image packaging, not source compilation.",
+  "imageTag": "context-lab/langfuse-web:4.67.0-reasoning-subpath",
+  "imageId": "sha256:d7050e6a8ea33451ba8adc0e1b07f09e6b7132d3fa92922691db1e2be7d8c1c6",
+  "imageBuiltAt": "2026-10-22T04:01:41.243Z"
+}
