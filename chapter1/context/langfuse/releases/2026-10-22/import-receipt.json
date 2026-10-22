@@ -1,0 +1,23 @@
+{
+  "source_sha256": "790c39c98c786a07c403c77e85497325db5b6213cc019be5e0c5a33e23f348af",
+  "session_id": "exp1-1-790c39c98c78",
+  "dataset_id": "cmvhzg54p0008mp2cmpojgvlf",
+  "project_url": "https://ai-tutor-helper.corp.youdao.com/langfuse/project/ai-agent-book-experiments",
+  "verified_experiments": [
+    {
+      "id": "2533cc09399e5b2e873479f4a93f01e6"
+    },
+    {
+      "id": "eebb39228db55465bbbca3e97497553a"
+    },
+    {
+      "id": "452a94d753cb5f8eaa6eebb1e0116289"
+    },
+    {
+      "id": "a810990a4d825f21bffd7b7ca526c38b"
+    },
+    {
+      "id": "747caa15ff745f479aff2d9750b87610"
+    }
+  ]
+}

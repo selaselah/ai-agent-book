@@ -1,0 +1,53 @@
+# Used alongside source/docker-compose.yml from Langfuse v4.66.0.
+# All data volumes are scoped to this project and stored on /disk1.
+services:
+  langfuse-web:
+    image: ${LANGFUSE_WEB_IMAGE:-docker.langfuse.com/langfuse/langfuse:4.66.0}
+    ports: !override
+      - "3060:3000"
+    mem_limit: 2g
+    logging: &logs
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    environment:
+      NEXT_PUBLIC_BASE_PATH: ${NEXT_PUBLIC_BASE_PATH:-}
+      AUTH_DISABLE_SIGNUP: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      LANGFUSE_IN_APP_AGENT_ENABLED: "false"
+  langfuse-worker:
+    image: docker.langfuse.com/langfuse/langfuse-worker:4.66.0
+    ports: !reset []
+    mem_limit: 2g
+    logging: *logs
+    environment:
+      LANGFUSE_IN_APP_AGENT_ENABLED: "false"
+  postgres:
+    ports: !reset []
+    mem_limit: 512m
+    logging: *logs
+  clickhouse:
+    ports: !reset []
+    mem_limit: 2560m
+    logging: *logs
+  redis:
+    image: docker.io/redis:7-alpine
+    ports: !reset []
+    mem_limit: 256m
+    logging: *logs
+  minio:
+    ports: !override
+      - "9060:9000"
+    mem_limit: 512m
+    logging: *logs
+
+volumes:
+  langfuse_postgres_data:
+    driver_opts: { type: none, o: bind, device: /disk1/langfuse/data/postgres }
+  langfuse_clickhouse_data:
+    driver_opts: { type: none, o: bind, device: /disk1/langfuse/data/clickhouse }
+  langfuse_clickhouse_logs:
+    driver_opts: { type: none, o: bind, device: /disk1/langfuse/data/clickhouse-logs }
+  langfuse_minio_data:
+    driver_opts: { type: none, o: bind, device: /disk1/langfuse/data/minio }
+  langfuse_redis_data:
+    driver_opts: { type: none, o: bind, device: /disk1/langfuse/data/redis }

@@ -1,0 +1,244 @@
+diff --git a/packages/shared/src/utils/normalized-io/conventions/providers/openai/index.ts b/packages/shared/src/utils/normalized-io/conventions/providers/openai/index.ts
+index b0dfddd..e9d8c2b 100644
+--- a/packages/shared/src/utils/normalized-io/conventions/providers/openai/index.ts
++++ b/packages/shared/src/utils/normalized-io/conventions/providers/openai/index.ts
+@@ -388,7 +388,7 @@ function normalizeAudioOutput(
+ }
+ 
+ /**
+- * OpenAI message-sibling fields: `refusal`/`audio`, and Responses reasoning
++ * OpenAI message-sibling fields: `reasoning_content`, `refusal`/`audio`, and Responses reasoning
+  * items (content[] is collected via the regular parts path; `summary` is a
+  * sibling stream collected either way, and the replayable `encrypted_content`
+  * blob becomes its own stream element after the visible parts).
+@@ -398,6 +398,17 @@ function openAiCollectSiblingParts(
+   baseParts: readonly NormalizedMessagePart[],
+   context: { normalizePartList(values: unknown[]): NormalizedMessagePart[] },
+ ): SiblingPartContribution[] {
++  const contributions: SiblingPartContribution[] = [];
++  // OpenAI-compatible Chat Completions expose visible reasoning beside content.
++  const reasoning = optionalString(value.reasoning_content);
++  if (reasoning?.trim()) {
++    contributions.push({
++      sourceKey: "reasoning_content",
++      slot: "before-content",
++      parts: [reasoningPart(reasoning)],
++    });
++  }
++
+   const parts: NormalizedMessagePart[] = [];
+ 
+   const refusal = optionalString(value.refusal);
+@@ -410,9 +421,14 @@ function openAiCollectSiblingParts(
+     parts.push(...openAiReasoningParts(value, baseParts, context));
+   }
+ 
+-  return parts.length > 0
+-    ? [{ sourceKey: "openai.siblings", slot: "after-tool-calls", parts }]
+-    : [];
++  if (parts.length > 0) {
++    contributions.push({
++      sourceKey: "openai.siblings",
++      slot: "after-tool-calls",
++      parts,
++    });
++  }
++  return contributions;
+ }
+ 
+ function openAiReasoningParts(
+diff --git a/packages/shared/src/utils/normalized-io/conventions/providers/openai/openai.test.ts b/packages/shared/src/utils/normalized-io/conventions/providers/openai/openai.test.ts
+index c0454d6..c5f6ccb 100644
+--- a/packages/shared/src/utils/normalized-io/conventions/providers/openai/openai.test.ts
++++ b/packages/shared/src/utils/normalized-io/conventions/providers/openai/openai.test.ts
+@@ -13,6 +13,82 @@ import {
+ } from "./fixtures";
+ 
+ describe("OpenAI normalized I/O", () => {
++  it.each(["input", "output"] as const)(
++    "preserves assistant reasoning_content in %s alongside text and tool calls",
++    (source) => {
++      const message = {
++        role: "assistant",
++        content: "I will calculate the total.",
++        reasoning_content: "I need to add the converted amounts.",
++        tool_calls: [
++          {
++            id: "call-total",
++            type: "function",
++            function: {
++              name: "code_interpreter",
++              arguments: '{"code":"total = 1 + 2"}',
++            },
++          },
++        ],
++      };
++      const spanIO = {
++        input: source === "input" ? { messages: [message] } : undefined,
++        output: source === "output" ? message : undefined,
++        metadata: undefined,
++      };
++      const original = structuredClone(spanIO);
++
++      const result = normalizeSpanIO(spanIO);
++
++      expect(result.messages).toEqual([
++        {
++          role: "assistant",
++          source,
++          parts: [
++            {
++              type: "reasoning",
++              content: {
++                kind: "text",
++                text: "I need to add the converted amounts.",
++              },
++            },
++            { type: "text", text: "I will calculate the total." },
++            {
++              type: "tool-call",
++              toolCallId: "call-total",
++              toolName: "code_interpreter",
++              input: { code: "total = 1 + 2" },
++              toolType: "function",
++            },
++          ],
++        },
++      ]);
++      expect(result.span).toBe(spanIO);
++      expect(spanIO).toEqual(original);
++    },
++  );
++
++  it.each([undefined, null, ""])(
++    "does not create reasoning blocks for reasoning_content=%s",
++    (reasoningContent) => {
++      const message = {
++        role: "assistant",
++        content: "The total is 3.",
++        reasoning_content: reasoningContent,
++      };
++      const result = normalizeSpanIO({
++        input: { messages: [message] },
++        output: message,
++        metadata: undefined,
++      });
++
++      expect(result.messages.map((message) => message.parts)).toEqual([
++        [{ type: "text", text: "The total is 3." }],
++        [{ type: "text", text: "The total is 3." }],
++      ]);
++    },
++  );
++
+   it.each([
+     ...capturedTraceFixtures,
+     ...documentedResponsesFixtures,
+diff --git a/web/next.config.mjs b/web/next.config.mjs
+index 12d1006..b8e2de7 100644
+--- a/web/next.config.mjs
++++ b/web/next.config.mjs
+@@ -7,6 +7,9 @@ import { withSentryConfig } from "@sentry/nextjs";
+ import { env } from "./src/env.mjs";
+ import { renamedRouteRedirects } from "./redirects.mjs";
+ 
++// Reduce transient compiler memory on small self-hosted build hosts.
++const memorySaverBuild = process.env.LANGFUSE_BUILD_MEMORY_SAVER === "true";
++
+ /**
+  * CSP headers
+  * img-src https to allow loading images from SSO providers
+@@ -85,14 +88,14 @@ const reportToHeader = {
+ 
+ /** @type {import("next").NextConfig} */
+ const nextConfig = {
+-  // Emit and serve browser source maps in production. Langfuse is open source,
+-  // so there is nothing to hide by shipping maps, and browser devtools then
++  // Emit and serve browser source maps unless the memory saver build opts out.
++  // Langfuse is open source; browser devtools use maps to
+   // de-minify client stacks automatically. NOTE: this alone does NOT make Sentry
+   // legible — the Sentry SDK rewrites frames to the `app:///` scheme, which is
+   // not a fetchable URL, so Sentry cannot pull these public maps. Sentry
+   // symbolication is handled separately by uploading maps with debug IDs (see
+   // `sourcemaps` in withSentryConfig below).
+-  productionBrowserSourceMaps: true,
++  productionBrowserSourceMaps: !memorySaverBuild,
+   typescript: {
+     // CI test jobs run `pnpm run typecheck` separately and skip duplicate
+     // Next.js type checks to keep test builds fast. Production/Docker builds
+@@ -155,6 +158,7 @@ const nextConfig = {
+     browserToTerminal: true,
+   },
+   experimental: {
++    ...(memorySaverBuild ? { webpackMemoryOptimizations: true } : {}),
+     // Ephemeral CI builds can skip writing compiler state they never restore.
+     ...(process.env.NEXT_DISABLE_BUILD_CACHE === "true"
+       ? { turbopackFileSystemCacheForBuild: false }
+@@ -391,6 +395,7 @@ const sentryConfig = withSentryConfig(nextConfig, {
+   // maps publicly (`productionBrowserSourceMaps` above, for devtools), so unlike
+   // the old `hideSourceMaps` we do NOT delete them after upload.
+   sourcemaps: {
++    ...(memorySaverBuild ? { disable: true } : {}),
+     deleteSourcemapsAfterUpload: false,
+   },
+ 
+diff --git a/web/src/features/traces/hooks/useChatMLParser.clienttest.ts b/web/src/features/traces/hooks/useChatMLParser.clienttest.ts
+index e50b468..89d5b43 100644
+--- a/web/src/features/traces/hooks/useChatMLParser.clienttest.ts
++++ b/web/src/features/traces/hooks/useChatMLParser.clienttest.ts
+@@ -27,6 +27,55 @@ const parserImplementations = [
+ ] as const;
+ 
+ describe("useChatMLParser", () => {
++  it("normalized parser renders reasoning_content from history and output as Thinking blocks", () => {
++    const input = [
++      {
++        role: "assistant",
++        content: "I will convert the amounts.",
++        reasoning_content: "The amounts must use the same currency.",
++      },
++    ];
++    const output = {
++      role: "assistant",
++      content: null,
++      reasoning_content: "Now I can calculate the total.",
++      tool_calls: [
++        {
++          id: "call-total",
++          type: "function",
++          function: {
++            name: "code_interpreter",
++            arguments: '{"code":"total = 1 + 2"}',
++          },
++        },
++      ],
++    };
++    const original = structuredClone({ input, output });
++
++    const result = toIOPreview(
++      normalizeSpanIO({ input, output, metadata: undefined }),
++    );
++
++    expect(result.inputMessageCount).toBe(1);
++    expect(result.allMessages.map((message) => message.thinking)).toEqual([
++      [
++        {
++          type: "thinking",
++          content: "The amounts must use the same currency.",
++        },
++      ],
++      [{ type: "thinking", content: "Now I can calculate the total." }],
++    ]);
++    expect(result.allMessages.every(hasThinkingContent)).toBe(true);
++    expect(result.allMessages[0]?.content).toBe("I will convert the amounts.");
++    expect(result.allMessages[1]?.tool_calls?.[0]).toMatchObject({
++      id: "call-total",
++      name: "code_interpreter",
++      arguments: { code: "total = 1 + 2" },
++    });
++    expect({ input, output }).toEqual(original);
++  });
++
+   it.each(parserImplementations)(
+     "$name parser groups output-side tool call arguments by tool name",
+     ({ parse, expectedArguments }) => {

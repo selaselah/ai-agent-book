@@ -203,6 +203,19 @@ python main.py --mode ablation --cases 3
 
 控制台会打印两张表：逐次运行的 **ablation study results**，以及 **comparison matrix**（上下文模式 × 用例），便于一眼对比各组件的作用。
 
+#### 交互式轨迹查看器
+
+已部署的 Langfuse：[实验项目](https://ai-tutor-helper.corp.youdao.com/langfuse/project/ai-agent-book-experiments)。五组实验的固定记录、Thinking 展示补丁、部署脚本和验收结果均保存在 [langfuse/](langfuse/README.md)，可以从项目还原，不依赖临时构建目录。
+
+运行实验后，可以通过本地界面逐轮查看五组实验的模型输入、响应、工具执行结果与实际回传观测：
+
+```bash
+# 从仓库根目录启动，无需安装前端依赖
+.venv/bin/python chapter1/context/trace_viewer.py
+```
+
+打开 `http://127.0.0.1:8761`。默认加载 `validation/latest.json`，支持调用树、实验对比、Token 统计、逐步回放与原始 JSON 导出。工具节点会区分本地执行结果和下一轮模型实际收到的消息。指定其他记录可使用 `--evidence /path/to/evidence.json`，详见 [查看器说明](trace-viewer/README.md)。
+
 #### 自动化回归测试
 
 ```bash

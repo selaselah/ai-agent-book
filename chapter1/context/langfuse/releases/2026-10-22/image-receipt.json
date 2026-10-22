@@ -1,0 +1,50 @@
+[
+  {
+    "image": "docker.langfuse.com/langfuse/langfuse:4.66.0",
+    "digest": "sha256:c3f7127c7e29c95faa95b1f209d02c985a4045b07354c313acff5e2e0ef8974b",
+    "config_digest": "sha256:6689df70556efed0c9f6b82115aaf023de779164f19d286c2e5499ef3c2832b2",
+    "docker_image_id": "sha256:8e8d248990fa35883a72e3cce0c704524d886268dfe4e62879b94d2ba39d5966",
+    "archive": "/disk1/langfuse/images/44fdfc0fa91eeaae.tar",
+    "expanded_bytes": 1120452096
+  },
+  {
+    "image": "docker.langfuse.com/langfuse/langfuse-worker:4.66.0",
+    "digest": "sha256:ab4b7fc7b07a6b78043ad228371d0cb34a8c8bf6ec9e721292ad2c13d8aa4df3",
+    "config_digest": "sha256:dc1243ef1a29da88613bf7f3a748fa231af09edf1531abaf6efba891259bd285",
+    "docker_image_id": "sha256:a8457998bc94ac3c87a41506a1f5a2113abdf0a635cad4e96560f345d32950cf",
+    "archive": "/disk1/langfuse/images/1d5b8ce6e4792540.tar",
+    "expanded_bytes": 1359935488
+  },
+  {
+    "image": "docker.io/postgres:17-alpine",
+    "digest": "sha256:aa90e97ee862e558111d34cfb8b2c4bec768c2b039fb791341686928560263b3",
+    "config_digest": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537",
+    "docker_image_id": "sha256:7b20c441ce0c1f33470c6df5cd42243cb78b417121d0846f23093b4e1b891544",
+    "archive": "/disk1/langfuse/images/2ed178f828e06cd4.tar",
+    "expanded_bytes": 300021248
+  },
+  {
+    "image": "docker.io/redis:7-alpine",
+    "digest": "sha256:ca0acbb137c1dc3339c8b147a58fd6f42775d4599327b50e7b116c23de501af2",
+    "config_digest": "sha256:f84b0c4678011602b9b98c227a4dcd5468bf8b088b02fdd4165cb7758bad8058",
+    "docker_image_id": "sha256:1381fe0030d92594896c3fb2c32578d20fe89b69106417c36a091eb5f346ba27",
+    "archive": "/disk1/langfuse/images/d220dc517ceadfa7.tar",
+    "expanded_bytes": 39856640
+  },
+  {
+    "image": "docker.io/clickhouse/clickhouse-server:25.12",
+    "digest": null,
+    "config_digest": "sha256:0e76d9807edfac0345554816cd7f54aa9b650892848809932557c46e46bc3450",
+    "docker_image_id": "sha256:1bda6c2180ad6cd0fb7fcdcefa3891922663a6dffb406044ccd03c38f16164d4",
+    "archive": "/disk1/langfuse/images/fdf5a36bb0f5da27.tar",
+    "expanded_bytes": 871671296
+  },
+  {
+    "image": "cgr.dev/chainguard/minio:latest",
+    "digest": "sha256:8f1bd904345cfc2e4efb98be53195088be96608c8e1fbaf251414b27d4cbdc12",
+    "config_digest": "sha256:6434825b9e8948238d7b1be5197921db66586a280881073cc50fd2745035ba04",
+    "docker_image_id": "sha256:de3258188dda752a2bc12c17b9b17a554f0b5007129139d10a412d20b8b77f06",
+    "archive": "/disk1/langfuse/images/9a7b6d7f8163c2c2.tar",
+    "expanded_bytes": 170064384
+  }
+]

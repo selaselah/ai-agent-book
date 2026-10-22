@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Context Lab · 实验轨迹</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%231c493c'/%3E%3Cpath d='M11 13h18M11 20h11M11 27h18' stroke='%23c4ef9b' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/"><span class="brand-mark">c<span>↗</span></span><span>context<span class="brand-lab">lab</span></span></a>
+    <div class="workspace"><span class="workspace-icon">A</span><span>AI Agent Book<small>本地工作空间</small></span><span class="muted">⌄</span></div>
+    <div class="nav-label">工作空间</div>
+    <button class="nav-item active" data-action="traces"><span>⌘</span>实验轨迹 <span class="nav-count">5</span></button>
+    <button class="nav-item" data-action="compare"><span>▥</span>实验对比</button>
+    <button class="nav-item" data-action="task"><span>▤</span>任务与评分</button>
+    <div class="nav-label projects-label">当前项目</div>
+    <div class="project"><span class="project-dot"></span>上下文的关键作用<small>Experiment 1-1</small></div>
+    <div class="sidebar-note"><span class="live-dot"></span>真实执行记录<small>读取本地 evidence.json<br>不调用模型 API</small></div>
+    <div class="profile"><span class="avatar">研</span><span>实验工作台<small>Local environment</small></span><span class="muted">⌘</span></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="breadcrumbs">项目 <span>/</span> 上下文的关键作用 <span>/</span> <strong>实验轨迹</strong></div><span class="local-tag"><span class="live-dot"></span>本地预览</span></header>
+    <div class="page">
+      <div class="page-heading"><div><div class="eyebrow">OBSERVABILITY / EXPERIMENT 1-1</div><h1>看见上下文，理解 Agent<span class="version">5 组消融对照</span></h1><p class="subtitle">同一个任务，五种上下文。沿着每次调用，找到结果发生变化的那一步。</p></div><button class="button secondary" data-action="download"><span>↓</span> 导出记录</button></div>
+      <div class="run-info" id="run-info"></div>
+      <section class="experiment-grid" id="experiment-grid" aria-label="选择实验组"></section>
+      <section class="workbench" aria-label="实验轨迹查看器">
+        <div class="workbench-top"><div class="section-title"><span class="live-dot"></span>Trace explorer <span class="muted">/</span><strong id="active-name"></strong></div><button class="text-button" data-action="compare">对比全部实验 <span>↗</span></button></div>
+        <div class="insight" id="insight"></div>
+        <div class="explorer">
+          <section class="trace-panel"><div class="panel-heading"><strong>调用树</strong><span class="mono" id="node-count"></span></div><div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="搜索工具或轮次…" aria-label="搜索调用树"><kbd>/</kbd></div><div id="trace-tree" class="trace-tree"></div><div class="tree-footer"><span class="legend-dot llm"></span>模型调用<span class="legend-dot tool"></span>工具执行</div></section>
+          <section class="detail-panel"><div class="detail-heading" id="detail-heading"></div><div class="tabs" role="tablist" aria-label="轨迹详情"><button class="tab active" role="tab" aria-selected="true" data-tab="overview">概览</button><button class="tab" role="tab" aria-selected="false" data-tab="input">模型输入</button><button class="tab" role="tab" aria-selected="false" data-tab="output">模型输出</button><button class="tab" role="tab" aria-selected="false" data-tab="raw">原始 JSON</button></div><div id="detail-body" class="detail-body" role="tabpanel"></div></section>
+        </div>
+        <div class="replay"><div><span class="replay-dot"></span><strong>轨迹回放</strong><span class="replay-help">逐步查看已记录的执行过程</span></div><div class="replay-controls"><button class="icon-button" id="previous" aria-label="上一步">←</button><span class="mono" id="replay-position"></span><button class="icon-button" id="next" aria-label="下一步">→</button><button class="button small" id="play">▶ 自动回放</button></div></div>
+      </section>
+      <footer class="page-footer"><span>CONTEXT LAB <span class="footer-divider">/</span>以实际请求为依据</span><span>单次实验记录 · 不代表模型的稳定表现 <span class="footer-divider">·</span> ← → 逐步浏览</span></footer>
+    </div>
+  </main>
+  <dialog id="modal"><div id="modal-content"></div></dialog>
+  <div id="toast" role="status"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

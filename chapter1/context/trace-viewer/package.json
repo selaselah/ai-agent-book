@@ -1,0 +1,6 @@
+{
+  "name": "context-lab-trace-viewer",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test model.test.mjs" }
+}

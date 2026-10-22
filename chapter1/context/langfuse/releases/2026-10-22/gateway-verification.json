@@ -1,0 +1,8 @@
+{
+  "/langfuse/api/public/health": 200,
+  "/android/": 200,
+  "/": 503,
+  "/02/": 503,
+  "/api/status": 503,
+  "android_range": "206; first 32 bytes preserved"
+}
